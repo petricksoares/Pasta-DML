@@ -1,0 +1,57 @@
+--Tabela de Alunos
+CREATE TABLE Alunos (
+id_aluno SERIAL PRIMARY KEY,
+nome_aluno VARCHAR(75) NOT NULL,
+matricula VARCHAR(20) NOT NULL UNIQUE,
+email VARCHAR(100) UNIQUE,
+data_nascimento DATE,
+telefone VARCHAR(20)
+);
+
+--Tabela de Categorias
+CREATE TABLE Categorias (
+id_categoria SERIAL PRIMARY KEY,
+nome_categoria VARCHAR(75) NOT NULL UNIQUE,
+descricao VARCHAR(100)
+);
+
+--Tabela de Livros
+CREATE TABLE Livros (
+id_livro SERIAL PRIMARY KEY,
+titulo VARCHAR(100) NOT NULL,
+autor VARCHAR(75) NOT NULL,
+id_categoria INT NOT NULL,
+quantidade_total INT NOT NULL DEFAULT 1,
+quantidade_disponivel INT NOT NULL DEFAULT 1 CHECK (quantidade_disponivel <= quantidade_total),
+FOREIGN KEY (id_categoria) REFERENCES Categorias(id_categoria)
+);
+
+--Tabela de Empréstimos
+CREATE TABLE Emprestimos (
+id_emprestimo SERIAL PRIMARY KEY,
+id_aluno INT NOT NULL,
+id_livro INT NOT NULL,
+data_emprestimo DATE NOT NULL DEFAULT CURRENT_DATE,
+data_devolucao_prevista DATE NOT NULL,
+data_devolucao_real DATE,
+FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno),
+FOREIGN KEY (id_livro) REFERENCES Livros(id_livro)
+);
+
+--Tabela de Devoluções
+CREATE TABLE Devolucoes (
+id_devolucao SERIAL PRIMARY KEY,
+id_emprestimo INT NOT NULL UNIQUE,
+data_devolucao DATE NOT NULL DEFAULT CURRENT_DATE,
+FOREIGN KEY (id_emprestimo) REFERENCES Emprestimos(id_emprestimo)
+);
+
+-- Tabela de Multas
+CREATE TABLE Multas (
+id_multa SERIAL PRIMARY KEY,
+id_emprestimo INT NOT NULL UNIQUE,
+valor_multa DECIMAL(10, 2) NOT NULL CHECK (valor_multa >= 0),
+data_vencimento DATE NOT NULL,
+data_pagamento DATE,
+FOREIGN KEY (id_emprestimo) REFERENCES Emprestimos(id_emprestimo)
+);
